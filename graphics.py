@@ -24,8 +24,8 @@ def load_background(image_path):
         raise SystemExit(e)
 
 
-def draw_balls(screen):
-    for ball in Ball.balls:
+def draw_balls(screen, ball_pool):
+    for ball in ball_pool.active_balls:
         if len(ball.track) > 2:
             pygame.draw.aalines(screen, ball.color, False, ball.track, 2)
         ball.draw(screen)

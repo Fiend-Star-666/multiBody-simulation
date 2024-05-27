@@ -3,6 +3,8 @@ import time
 # Constants for game settings
 START_TIME = time.time()
 FPS = 240
+DISPLAY_WIDTH = 590
+DISPLAY_HEIGHT = 470
 WIDTH, HEIGHT = 590, 470
 WINDOW_POSITION = (1360 - WIDTH, 40)
 
