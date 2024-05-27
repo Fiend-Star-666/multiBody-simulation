@@ -1,6 +1,7 @@
 import pygame
 from math import sqrt
 from constants import GRAVITY, FPS, WIDTH, HEIGHT
+import pygame.gfxdraw
 
 
 class Ball:
@@ -22,7 +23,9 @@ class Ball:
         Ball.balls.append(self)
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color, (int(self.posx), int(self.posy)), self.radius, self.thicc)
+        pygame.gfxdraw.aacircle(screen, int(self.posx), int(self.posy), self.radius, self.color)
+        pygame.gfxdraw.filled_circle(screen, int(self.posx), int(self.posy), self.radius, self.color)
+        # pygame.draw.circle(screen, self.color, (int(self.posx), int(self.posy)), self.radius, self.thicc)
 
     def handle_collision(self, centx, centy, bigr):
         vel = sqrt(self.velx ** 2 + self.vely ** 2)
@@ -79,5 +82,4 @@ class BigCircle:
         self.color = color
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color, (self.center_x, self.center_y), self.radius, 1)
-        # 1 is the thickness of the circle border
+        pygame.gfxdraw.aacircle(screen, self.center_x, self.center_y, self.radius, self.color)

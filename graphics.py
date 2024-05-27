@@ -40,12 +40,11 @@ def draw_big_circle(screen, big_circle):
     big_circle.draw(screen)
 
 
-
 def move(rotation, steps, position):
     """Move a point in a given direction by a certain number of steps."""
     x_position = cos(radians(rotation)) * steps + position[0]
     y_position = sin(radians(rotation)) * steps + position[1]
-    return (x_position, y_position)
+    return x_position, y_position
 
 
 def draw_thick_line(screen, point1, point2, thickness, color):
