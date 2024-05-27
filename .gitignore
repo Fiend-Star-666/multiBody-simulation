@@ -1,0 +1,10 @@
+/bouncing_ball.py
+/collisiontest.py
+/colour.css
+/gravity.py
+/reflection.py
+/smooth_line.py
+__pycache__/
+# We don't want text files and css files cuz I used the css for the vscode color picker
+*.txt
+*.css

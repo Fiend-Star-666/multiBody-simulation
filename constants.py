@@ -1,0 +1,31 @@
+import time
+
+# Constants for game settings
+START_TIME = time.time()
+FPS = 120
+WIDTH, HEIGHT = 590, 470
+WINDOW_POSITION = (1360 - WIDTH, 40)
+
+# Colors
+WHITE = (255, 255, 255)
+WHITEST = (204, 234, 234)
+GREY = (27, 27, 27)
+BLACK = (0, 0, 0)
+BLACKCORAL = (39, 22, 16)
+DEEPBLUE = (0, 4, 30)
+RED = (225, 40, 40)
+GREEN = (10, 200, 27)
+YELLOWISH = (191, 202, 37)
+ORANGE = (255, 72, 0)
+VELVET = (232, 20, 20)
+BLUISH_WHITE = (179, 255, 251)
+BLUE = (17, 200, 251)
+TASTYELLOW = (255, 230, 0)
+ARROW_COLOR = (255, 255, 255)
+GOLDEN = (245, 170, 10)
+ALGEABLUE = (7, 197, 70)
+MAGENTA = (255, 13, 130)
+MAGENTA2 = (214, 0, 100)
+
+# Gravity
+GRAVITY = -9.81
