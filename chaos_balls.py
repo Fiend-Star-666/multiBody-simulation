@@ -31,17 +31,17 @@ def create_initial_balls():
                                  collision_sound)
     red_ball.vel_y = -5
 
-    green_ball = ball_pool.acquire("Green Ball", GREEN, 8, 0, WIDTH // 2 + HEIGHT // 2 - 10, HEIGHT // 2,
-                                   collision_sound)
-    green_ball.vel_y = 5
-
-    velvet_ball = ball_pool.acquire("Velvet Ball", VELVET, 8, 0, WIDTH // 2, HEIGHT // 2 - HEIGHT // 2 + 10,
-                                    collision_sound)
-    velvet_ball.vel_x = 10
-
-    gold_ball = ball_pool.acquire("Gold Ball", MAGENTA, 8, 0, WIDTH // 2, HEIGHT // 2 + HEIGHT // 2 - 10,
-                                  collision_sound)
-    gold_ball.vel_x = 2
+    # green_ball = ball_pool.acquire("Green Ball", GREEN, 8, 0, WIDTH // 2 + HEIGHT // 2 - 10, HEIGHT // 2,
+    #                                collision_sound)
+    # green_ball.vel_y = 5
+    #
+    # velvet_ball = ball_pool.acquire("Velvet Ball", VELVET, 8, 0, WIDTH // 2, HEIGHT // 2 - HEIGHT // 2 + 10,
+    #                                 collision_sound)
+    # velvet_ball.vel_x = 10
+    #
+    # gold_ball = ball_pool.acquire("Gold Ball", MAGENTA, 8, 0, WIDTH // 2, HEIGHT // 2 + HEIGHT // 2 - 10,
+    #                               collision_sound)
+    # gold_ball.vel_x = 2
 
 
 # Initial screen before simulation starts
