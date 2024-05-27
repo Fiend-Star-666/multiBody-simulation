@@ -2,7 +2,7 @@ import time
 
 # Constants for game settings
 START_TIME = time.time()
-FPS = 120
+FPS = 240
 WIDTH, HEIGHT = 590, 470
 WINDOW_POSITION = (1360 - WIDTH, 40)
 

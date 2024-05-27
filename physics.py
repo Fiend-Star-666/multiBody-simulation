@@ -11,16 +11,16 @@ def update_ball_position():
         ball.pos_y += ball.vel_y  # Positive y should increase downward if gravity is downwards
 
 
-def handle_collisions():
+def handle_collisions(big_circle):
     for ball in Ball.balls:
         # Retrieve the center coordinates of the big circle
-        circle_center_x, circle_center_y = BigCircle.center_x, BigCircle.center_y
+        circle_center_x, circle_center_y = big_circle.center_x, big_circle.center_y
 
         # Calculate the distance from the center of the big circle to the ball
         distance_to_ball = sqrt((circle_center_x - ball.pos_x) ** 2 + (circle_center_y - ball.pos_y) ** 2)
 
         # Check if the ball is colliding with or inside the big circle
-        if distance_to_ball <= (BigCircle.radius + ball.radius):
+        if distance_to_ball <= (big_circle.radius + ball.radius):
             # Play collision sound
             pygame.mixer.Sound.play(pygame.mixer.Sound(ball.sound))
 

@@ -3,8 +3,8 @@ from pygame.math import Vector2
 
 pygame.init()
 
-SCREEN_WIDTH, SCREEN_HEIGTH = 800, 600
-SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGTH))
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 CAPTION = "bouncing ring inside ring"
 INITIAL_LINE_WIDTH = 5
 INITIAL_HUE = 80
@@ -13,8 +13,8 @@ SIMULATION_GROWTH_RATE = 30
 HUE_SPEED = 10
 
 large_ring = {
-    "center": Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGTH / 2),
-    "radius": SCREEN_HEIGTH * 3 / 8,
+    "center": Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
+    "radius": SCREEN_HEIGHT * 3 / 8,
     "hue": INITIAL_HUE,
     "width": INITIAL_LINE_WIDTH * 2,
 }
@@ -22,7 +22,7 @@ large_ring = {
 
 def initial_ring():
     return {
-        "center": Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGTH / 2),
+        "center": Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
         "radius": 10,
         "hue": INITIAL_HUE,
         "width": INITIAL_LINE_WIDTH,

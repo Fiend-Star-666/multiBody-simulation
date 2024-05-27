@@ -1,4 +1,4 @@
-from math import sqrt
+from math import sqrt, hypot
 
 import pygame
 import pygame.gfxdraw
@@ -41,53 +41,61 @@ class Ball:
     def handle_collision(self, center_x, center_y, big_radius):
         velocity_magnitude = sqrt(self.vel_x ** 2 + self.vel_y ** 2)
         ball_x, ball_y = self.pos_x, self.pos_y
+
+        # Calculate the distance from the ball to the circle's center
         distance_to_center = sqrt((center_x - ball_x) ** 2 + (center_y - ball_y) ** 2)
 
+        # If the ball is overlapping or touching the boundary
         if distance_to_center >= (big_radius - self.radius):
-            if self.sound:  # Check if the sound attribute is not empty
+            # Optionally play the collision sound
+            if self.sound:
                 pygame.mixer.Sound.play(pygame.mixer.Sound(self.sound))
 
-            if velocity_magnitude > 0:  # Check to avoid division by zero
-                # Move the ball out of collision state
-                displacement = (big_radius - self.radius - distance_to_center + 1)
-                self.pos_x += (self.vel_x / velocity_magnitude) * displacement
-                self.pos_y += (self.vel_y / velocity_magnitude) * displacement
+            if velocity_magnitude > 0:
+                # Reposition the ball just inside the boundary
+                while sqrt((center_x - self.pos_x) ** 2 + (center_y - self.pos_y) ** 2) > (big_radius - self.radius):
+                    step = 0.2  # This small step ensures that the ball moves just inside the boundary
+                    self.pos_x += -self.vel_x * step / velocity_magnitude
+                    self.pos_y -= -self.vel_y * step / velocity_magnitude
 
-            # Calculate the normal vector
-            normal_x = ball_x - center_x
-            normal_y = ball_y - center_y
+            # Calculate normal vector from the circle's center to the ball
+            normal_x, normal_y = ball_x - center_x, ball_y - center_y
             normal_magnitude = distance_to_center
             normal_x /= normal_magnitude
             normal_y /= normal_magnitude
 
-            # Calculate the dot product of the normal vector and the velocity vector
-            incoming_velocity_x = self.vel_x
-            incoming_velocity_y = self.vel_y
-            dot_product = normal_x * incoming_velocity_x + normal_y * incoming_velocity_y
+            # Calculate dot product of velocity and normal vector
+            dot_product = normal_x * self.vel_x + normal_y * self.vel_y
 
-            # Calculate the reflected velocity components
-            reflected_velocity_x = incoming_velocity_x - 2 * dot_product * normal_x
-            reflected_velocity_y = incoming_velocity_y - 2 * dot_product * normal_y
+            # Reflect the velocity using the normal vector
+            self.vel_x -= 2 * dot_product * normal_x
+            self.vel_y -= 2 * dot_product * normal_y
 
-            # Update the ball's velocity with the reflected components
-            self.vel_x = reflected_velocity_x
-            self.vel_y = reflected_velocity_y  # Keep the sign consistent for realistic reflection
-
-    def update_motion(self):
-        self.vel_x += 0  # No horizontal acceleration
-        self.vel_y += self.acc  # Vertical acceleration
+    def update_motion(self, center_x, center_y, big_radius):
+        self.vel_y += self.acc
         self.pos_x += self.vel_x
         self.pos_y -= self.vel_y
 
+        dx = self.pos_x - center_x
+        dy = self.pos_y - center_y
+        distance_from_center = sqrt(dx ** 2 + dy ** 2)
+        if distance_from_center > big_radius - self.radius:
+            overlap = distance_from_center - (big_radius - self.radius)
+            self.pos_x -= (dx / distance_from_center) * overlap
+            self.pos_y -= (dy / distance_from_center) * overlap
+            normal_x, normal_y = dx / distance_from_center, dy / distance_from_center
+            dot_product = normal_x * self.vel_x + normal_y * self.vel_y
+            self.vel_x -= 2 * dot_product * normal_x
+            self.vel_y -= 2 * dot_product * normal_y
+
     def update_track(self, frames, trail, fps):
-        every = 2
-        period = 5
-        if frames % every == 0 and trail:
-            self.track.append((self.pos_x, self.pos_y))
-        if not trail:
+        if trail:
+            if not self.track or hypot(self.track[-1][0] - self.pos_x, self.track[-1][1] - self.pos_y) > 5:
+                self.track.append((self.pos_x, self.pos_y))
+            if len(self.track) > fps * 5:
+                self.track.pop(0)
+        else:
             self.track.clear()
-        elif len(self.track) > fps * period / every:
-            self.track.pop(0)
 
 
 class BallPool:

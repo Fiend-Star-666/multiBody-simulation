@@ -1,8 +1,7 @@
-import pygame
-from constants import *
-from graphics import setup_screen, draw_background, draw_balls, update_display, draw_big_circle, load_background
-from events import handle_events
-from game_objects import Ball, BigCircle, BallPool
+from events import *
+from game_objects import *
+from graphics import *
+from physics import *
 
 # Initialize Pygame and set up the window
 pygame.init()
@@ -30,6 +29,7 @@ def create_initial_balls():
     red_ball = ball_pool.acquire("Red Ball", RED, 8, 0, WIDTH // 2 - HEIGHT // 2 + 10, HEIGHT // 2,
                                  collision_sound)
     red_ball.vel_y = -5
+    red_ball.vel_x = 5
 
     # green_ball = ball_pool.acquire("Green Ball", GREEN, 8, 0, WIDTH // 2 + HEIGHT // 2 - 10, HEIGHT // 2,
     #                                collision_sound)
@@ -64,9 +64,11 @@ while True:
     pause, trail = handle_events(events, 'runtime', additional_params={'pause': pause, 'trail': trail})
 
     if not pause:
+        # update_ball_position()  # Use physics function for ball position updates
+        # handle_collisions(big_circle)  # Use physics function for collision handling
         for ball in Ball.balls:
             ball.handle_collision(WIDTH // 2, HEIGHT // 2, HEIGHT // 2)
-            ball.update_motion()
+            ball.update_motion(WIDTH // 2, HEIGHT // 2, HEIGHT // 2)
             ball.update_track(frames, trail, FPS)
 
     draw_balls(screen)
