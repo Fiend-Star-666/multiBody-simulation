@@ -21,7 +21,7 @@ class Ball:
         self.acc = GRAVITY  # Acceleration, can be set accordingly
         self.thickness = 0  # Border thickness for drawing
         self.track = []
-        Ball.balls.append(self)
+        # Ball.balls.append(self)
 
     def reset(self, name, color, radius, vel_x, pos_x, pos_y, sound="audio/golf_ball.wav"):
         self.name = name
@@ -51,12 +51,18 @@ class Ball:
             if self.sound:
                 pygame.mixer.Sound.play(pygame.mixer.Sound(self.sound))
 
-            if velocity_magnitude > 0:
                 # Reposition the ball just inside the boundary
-                while sqrt((center_x - self.pos_x) ** 2 + (center_y - self.pos_y) ** 2) > (big_radius - self.radius):
-                    step = 0.2  # This small step ensures that the ball moves just inside the boundary
-                    self.pos_x += -self.vel_x * step / velocity_magnitude
-                    self.pos_y -= -self.vel_y * step / velocity_magnitude
+                if velocity_magnitude == 0:
+                    # Prevent division by zero by repositioning the ball directly without relying on its velocity
+                    overlap = distance_to_center + self.radius - big_radius
+                    self.pos_x -= (ball_x - center_x) / distance_to_center * overlap
+                    self.pos_y -= (ball_y - center_y) / distance_to_center * overlap
+                else:
+                    while sqrt((center_x - self.pos_x) ** 2 + (center_y - self.pos_y) ** 2) > (
+                            big_radius - self.radius):
+                        step = 0.2  # This small step ensures that the ball moves just inside the boundary
+                        self.pos_x += -self.vel_x * step / velocity_magnitude
+                        self.pos_y += -self.vel_y * step / velocity_magnitude
 
             # Calculate normal vector from the circle's center to the ball
             normal_x, normal_y = ball_x - center_x, ball_y - center_y
@@ -101,19 +107,22 @@ class Ball:
 class BallPool:
     def __init__(self, size):
         self.size = size
-        self.pool = [Ball("", (0, 0, 0), 0, 0, 0, 0, "") for _ in range(size)]
+        self.pool = [Ball("Default", (128, 128, 128), 10, 1, -100, -100, "") for _ in range(size)]
         self.available = self.pool.copy()
+        self.active_balls = []  # List to track active balls
 
     def acquire(self, name, color, radius, vel_x, pos_x, pos_y, sound):
         if not self.available:
             raise Exception("No balls available in the pool")
         ball = self.available.pop()
         ball.reset(name, color, radius, vel_x, pos_x, pos_y, sound)
+        self.active_balls.append(ball)
         return ball
 
     def release(self, ball):
-        ball.reset("", (0, 0, 0), 0, 0, 0, 0, "")
+        ball.reset("Default", (128, 128, 128), 10, 1, -100, -100, "")
         self.available.append(ball)
+        self.active_balls.remove(ball)  # Remove from active list when released
 
 
 class BigCircle:
