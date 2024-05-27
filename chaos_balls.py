@@ -21,23 +21,28 @@ trail = True
 pool_size = 10
 ball_pool = BallPool(pool_size)
 
+
 # Function to create initial balls
 def create_initial_balls():
-    red_ball = ball_pool.acquire("Red Ball", RED, 8, 0, WIDTH // 2 - HEIGHT // 2 + 10, HEIGHT // 2, "golf_ball.wav")
+
+    collision_sound = "audio/golf_ball.wav"
+
+    red_ball = ball_pool.acquire("Red Ball", RED, 8, 0, WIDTH // 2 - HEIGHT // 2 + 10, HEIGHT // 2,
+                                 collision_sound)
     red_ball.vel_y = -5
 
-    green_ball = ball_pool.acquire("Green Ball", GREEN, 8, 0, WIDTH // 2 + HEIGHT // 2 - 10, HEIGHT // 2, "golf_ball.wav")
+    green_ball = ball_pool.acquire("Green Ball", GREEN, 8, 0, WIDTH // 2 + HEIGHT // 2 - 10, HEIGHT // 2,
+                                   collision_sound)
     green_ball.vel_y = 5
 
-    velvet_ball = ball_pool.acquire("Velvet Ball", VELVET, 8, 0, WIDTH // 2, HEIGHT // 2 - HEIGHT // 2 + 10, "golf_ball.wav")
+    velvet_ball = ball_pool.acquire("Velvet Ball", VELVET, 8, 0, WIDTH // 2, HEIGHT // 2 - HEIGHT // 2 + 10,
+                                    collision_sound)
     velvet_ball.vel_x = 10
 
-    gold_ball = ball_pool.acquire("Gold Ball", MAGENTA, 8, 0, WIDTH // 2, HEIGHT // 2 + HEIGHT // 2 - 10, "golf_ball.wav")
+    gold_ball = ball_pool.acquire("Gold Ball", MAGENTA, 8, 0, WIDTH // 2, HEIGHT // 2 + HEIGHT // 2 - 10,
+                                  collision_sound)
     gold_ball.vel_x = 2
 
-    # mage_ball = ball_pool.acquire("Mage Ball", MAGENTA2, 8, 0, WIDTH // 2 - HEIGHT // 2 + 10, HEIGHT // 2 - HEIGHT // 2 + 10, "golf_ball.wav")
-    # mage_ball.vel_x = 1
-    # Add more balls as needed using ball_pool.acquire()...
 
 # Initial screen before simulation starts
 while not start_sim:

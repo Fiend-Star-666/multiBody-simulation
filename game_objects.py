@@ -3,6 +3,8 @@ from math import sqrt
 import pygame
 import pygame.gfxdraw
 
+from constants import *
+
 
 class Ball:
     balls = []
@@ -16,7 +18,7 @@ class Ball:
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.sound = sound
-        self.acc = 0  # Acceleration, can be set accordingly
+        self.acc = GRAVITY  # Acceleration, can be set accordingly
         self.thickness = 0  # Border thickness for drawing
         self.track = []
         Ball.balls.append(self)
@@ -42,59 +44,34 @@ class Ball:
         distance_to_center = sqrt((center_x - ball_x) ** 2 + (center_y - ball_y) ** 2)
 
         if distance_to_center >= (big_radius - self.radius):
-            pygame.mixer.Sound.play(pygame.mixer.Sound("audio/golf_ball.wav"))
+            if self.sound:  # Check if the sound attribute is not empty
+                pygame.mixer.Sound.play(pygame.mixer.Sound(self.sound))
 
             if velocity_magnitude > 0:  # Check to avoid division by zero
-                while sqrt((center_x - self.pos_x) ** 2 + (center_y - self.pos_y) ** 2) > (big_radius - self.radius):
-                    step = 0.2
-                    self.pos_x += -self.vel_x * step / velocity_magnitude
-                    self.pos_y -= -self.vel_y * step / velocity_magnitude
+                # Move the ball out of collision state
+                displacement = (big_radius - self.radius - distance_to_center + 1)
+                self.pos_x += (self.vel_x / velocity_magnitude) * displacement
+                self.pos_y += (self.vel_y / velocity_magnitude) * displacement
 
+            # Calculate the normal vector
             normal_x = ball_x - center_x
             normal_y = ball_y - center_y
             normal_magnitude = distance_to_center
             normal_x /= normal_magnitude
             normal_y /= normal_magnitude
 
+            # Calculate the dot product of the normal vector and the velocity vector
             incoming_velocity_x = self.vel_x
             incoming_velocity_y = self.vel_y
             dot_product = normal_x * incoming_velocity_x + normal_y * incoming_velocity_y
 
+            # Calculate the reflected velocity components
             reflected_velocity_x = incoming_velocity_x - 2 * dot_product * normal_x
             reflected_velocity_y = incoming_velocity_y - 2 * dot_product * normal_y
 
+            # Update the ball's velocity with the reflected components
             self.vel_x = reflected_velocity_x
-            self.vel_y = -reflected_velocity_y
-
-    def handle_collision(self, center_x, center_y, big_radius):
-        velocity_magnitude = sqrt(self.vel_x ** 2 + self.vel_y ** 2)
-        ball_x, ball_y = self.pos_x, self.pos_y
-        distance_to_center = sqrt((center_x - ball_x) ** 2 + (center_y - ball_y) ** 2)
-
-        if distance_to_center >= (big_radius - self.radius):
-            pygame.mixer.Sound.play(pygame.mixer.Sound("audio/golf_ball.wav"))
-
-            if velocity_magnitude > 0:  # Check to avoid division by zero
-                while sqrt((center_x - self.pos_x) ** 2 + (center_y - self.pos_y) ** 2) > (big_radius - self.radius):
-                    step = 0.2
-                    self.pos_x += -self.vel_x * step / velocity_magnitude
-                    self.pos_y -= -self.vel_y * step / velocity_magnitude
-
-            normal_x = ball_x - center_x
-            normal_y = ball_y - center_y
-            normal_magnitude = distance_to_center
-            normal_x /= normal_magnitude
-            normal_y /= normal_magnitude
-
-            incoming_velocity_x = self.vel_x
-            incoming_velocity_y = self.vel_y
-            dot_product = normal_x * incoming_velocity_x + normal_y * incoming_velocity_y
-
-            reflected_velocity_x = incoming_velocity_x - 2 * dot_product * normal_x
-            reflected_velocity_y = incoming_velocity_y - 2 * dot_product * normal_y
-
-            self.vel_x = reflected_velocity_x
-            self.vel_y = -reflected_velocity_y
+            self.vel_y = reflected_velocity_y  # Keep the sign consistent for realistic reflection
 
     def update_motion(self):
         self.vel_x += 0  # No horizontal acceleration
