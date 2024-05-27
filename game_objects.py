@@ -19,7 +19,6 @@ class Ball:
         self.vely = 0
         self.acc = GRAVITY / FPS
         self.track = []
-
         Ball.balls.append(self)
 
     def draw(self, screen):
@@ -73,6 +72,8 @@ bigr = HEIGHT // 2
 redball = Ball("red ball", (245, 170, 10), 8, 0, WIDTH // 2 - bigr + 10, HEIGHT // 2, "golf_ball.wav")
 redball.vely = -5
 
+goldball = Ball("gold ball", (255, 72, 0), 8, 0, WIDTH // 2 + bigr - 10, HEIGHT // 2, "golf_ball.wav")
+goldball.vely = 5
 
 class BigCircle:
     def __init__(self, center_x, center_y, radius, color):
