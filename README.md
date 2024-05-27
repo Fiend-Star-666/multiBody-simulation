@@ -1,18 +1,6 @@
 # chaos-balls
 
-A Simulation of balls bouncing around in a circular ring, inspired by a [Numberphile video](https://youtu.be/6z4qRhpBIyA) on chaotic systems. The simulation demonstates how chaos and complexity arises from something as simple as balls bouncing in a ring. Written in python3 and pygame.
-
-## Requirements
-
-- [python 3.9](https://www.python.org/downloads/release/python-397/)
-
-Install these packages using pip:
-
-- pygame. preferably version 2.0.1
-
-```
-pip install pygame -V 2.0.1
-```
+Chaos Balls is a simulation of balls bouncing around in a circular ring, inspired by a [Numberphile video](https://youtu.be/6z4qRhpBIyA) on chaotic systems. The simulation demonstrates how chaos and complexity arise from something as simple as balls bouncing in a ring. It is written in Python 3 and uses the Pygame library.
 
 ## Run
 
