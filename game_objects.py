@@ -1,6 +1,3 @@
-import logging
-from math import sqrt
-
 import pygame
 import pygame.gfxdraw
 
@@ -22,7 +19,6 @@ class Ball:
         self.acc = GRAVITY  # Acceleration, can be set accordingly
         self.thickness = 6  # Border thickness for drawing
         self.track = []
-        # Ball.balls.append(self)
 
     def reset(self, name, color, radius, vel_x, vel_y, pos_x, pos_y, sound="audio/golf_ball.wav"):
         self.name = name

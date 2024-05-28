@@ -26,7 +26,8 @@ while running:
             sys.exit()
 
     # Get the distance between the inner and outer circles
-    distance = math.sqrt((inner_circle_pos[0] - outer_circle_pos[0]) ** 2 + (inner_circle_pos[1] - outer_circle_pos[1]) ** 2)
+    distance = math.sqrt(
+        (inner_circle_pos[0] - outer_circle_pos[0]) ** 2 + (inner_circle_pos[1] - outer_circle_pos[1]) ** 2)
 
     # Check for collisions between the outer perimeter of the outer circle and the outer perimeter of the inner circle
     if distance + inner_circle_radius >= outer_circle_radius:
@@ -55,8 +56,10 @@ while running:
         inner_circle_vel[1] = new_velocity_magnitude * math.sin(math.radians(new_angle))
 
     # Account for change in radius
-    inner_circle_pos[0] += (inner_circle_vel[0] + radius_change) if inner_circle_vel[0] >= 0 else (inner_circle_vel[0] - radius_change)
-    inner_circle_pos[1] += (inner_circle_vel[1] + radius_change) if inner_circle_vel[1] >= 0 else (inner_circle_vel[1] - radius_change)
+    inner_circle_pos[0] += (inner_circle_vel[0] + radius_change) if inner_circle_vel[0] >= 0 else (
+            inner_circle_vel[0] - radius_change)
+    inner_circle_pos[1] += (inner_circle_vel[1] + radius_change) if inner_circle_vel[1] >= 0 else (
+            inner_circle_vel[1] - radius_change)
 
     # Change the radius
     inner_circle_radius += inner_radius_change

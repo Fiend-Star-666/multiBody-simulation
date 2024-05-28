@@ -29,6 +29,5 @@ ALGAE_GREEN = (7, 197, 70)
 MAGENTA = (255, 13, 130)
 MAGENTA2 = (214, 0, 100)
 
-# Gravity
 # GRAVITY = +9.81
 GRAVITY = -0.1
