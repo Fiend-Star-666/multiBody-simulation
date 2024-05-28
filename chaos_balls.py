@@ -1,79 +1,59 @@
-from events import *
-from game_objects import *
-from graphics import *
-from physics import *
+import logging
 
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+import pygame
 
-# Initialize Pygame and set up the window
-pygame.init()
-screen = setup_screen(DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_POSITION)
-pygame.display.set_caption("Bouncing Balls")
-clock = pygame.time.Clock()
-background = load_background("img/start_img.png")
-circleCentre = (CIRCLE_WIDTH // 2, CIRCLE_HEIGHT // 2)
-big_circle_radius = CIRCLE_HEIGHT // 2
-big_circle = BigCircle(circleCentre[0], circleCentre[1], big_circle_radius, BLUISH_WHITE)
-logging.debug("Game initialized with main window and big circle setup.")
-
-# Main loop flags
-pause = False
-start_sim = False
-trail = True
-
-# Initialize ball pool
-pool_size = 10
-ball_pool = BallPool(pool_size)
+from ball_initialization import create_initial_balls
+from constants import DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_POSITION, BLUISH_WHITE, CIRCLE_WIDTH, CIRCLE_HEIGHT, FPS
+from event_loop import wait_for_simulation_start, run_simulation
+from game_objects import BigCircle, BallPool
+from graphics import setup_screen, load_background
+from logging_setup import setup_logging
+from physics import handle_boundary_collision, handle_ball_collision, update_motion
 
 
-# Function to create initial balls
-def create_initial_balls():
-    collision_sound = "audio/golf_ball.wav"
-    logging.debug("Creating initial balls.")
-    ball_radius = 10
+class Game:
+    def __init__(self):
+        pygame.init()
+        self.screen = setup_screen(DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_POSITION)
+        pygame.display.set_caption("Bouncing Balls")
+        self.clock = pygame.time.Clock()
+        self.background = load_background("img/start_img.png")
+        self.circleCentre = (CIRCLE_WIDTH // 2, CIRCLE_HEIGHT // 2)
+        self.big_circle_radius = CIRCLE_HEIGHT // 2
+        self.big_circle = BigCircle(self.circleCentre[0], self.circleCentre[1], self.big_circle_radius, BLUISH_WHITE)
+        self.pause = False
+        self.start_sim = False
+        self.trail = True
+        self.frames = 0
+        self.ball_pool = BallPool(10)
+        logging.debug("Game initialized with main window and big circle setup.")
 
-    red_ball = ball_pool.acquire("Red Ball", RED, ball_radius, 5, -5, circleCentre[0] - circleCentre[1] + ball_radius,
-                                 big_circle_radius, collision_sound)
-    ball_pool.active_balls.append(red_ball)
-    logging.info("Red ball acquired from pool and initialized.")
+    def update_balls(self):
+        circle_center_x, circle_center_y = self.circleCentre
+        big_circle_radius = self.big_circle_radius
+        active_balls = self.ball_pool.active_balls
+        num_balls = len(active_balls)
 
-    gold_ball = ball_pool.acquire("GOLDEN Ball", GOLDEN, ball_radius, -5, 5,
-                                  circleCentre[0] + circleCentre[1] - ball_radius,
-                                  big_circle_radius, collision_sound)
-    ball_pool.active_balls.append(gold_ball)
-    logging.info("GOLDEN ball acquired from pool and initialized.")
+        for i in range(num_balls):
+            ball = active_balls[i]
+            handle_boundary_collision(ball, circle_center_x, circle_center_y, big_circle_radius)
+
+            for j in range(i + 1, num_balls):
+                other_ball = active_balls[j]
+                handle_ball_collision(ball, other_ball)
+
+            update_motion(ball)
+            ball.update_motion_trace(self.frames, self.trail, FPS)
 
 
-# Initial screen before simulation starts
-while not start_sim:
-    screen.fill(DEEP_BLUE)
-    draw_background(screen, background)
-    start_sim = handle_events(pygame.event.get(), 'start_sim')
-    pygame.display.update()  # Update the display
-    logging.debug("Waiting for simulation start.")
-
-# Create initial balls once the simulation starts
-create_initial_balls()
-
-# Main simulation loop
-frames = 0
-while True:
-    screen.fill(DEEP_BLUE)
-    draw_big_circle(screen, big_circle)  # Draw the big circle
-    logging.debug("Main simulation loop running.")
-
-    events = pygame.event.get()
-    pause, trail = handle_events(events, 'runtime', additional_params={'pause': pause, 'trail': trail})
-
-    if not pause:
-        for i, ball in enumerate(ball_pool.active_balls):
-            ball.handle_boundary_collision(circleCentre[0], circleCentre[1], big_circle_radius)
-            for other in ball_pool.active_balls[i + 1:]:
-                ball.handle_ball_collision(other)
-            ball.update_motion()
-            ball.update_track(frames, trail, FPS)
-
-    draw_balls(screen, ball_pool)  # Ensure this function draws only active balls
-    update_display(clock, FPS)
-    frames += 1
+if __name__ == "__main__":
+    setup_logging()
+    try:
+        game = Game()
+        wait_for_simulation_start(game.screen, game.background)
+        create_initial_balls(game.ball_pool, game.circleCentre, game.big_circle_radius)
+        run_simulation(game)
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+    finally:
+        pygame.quit()
