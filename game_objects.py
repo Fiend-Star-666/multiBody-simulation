@@ -135,8 +135,6 @@ class BallPool:
         self.available.append(ball)
         self.active_balls.remove(ball)  # Remove from active list when released
 
-goldball = Ball("gold ball", (255, 72, 0), 8, 0, WIDTH // 2 + bigr - 10, HEIGHT // 2, "golf_ball.wav")
-goldball.vely = 5
 
 class BigCircle:
     def __init__(self, center_x, center_y, radius, color):
