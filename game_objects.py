@@ -1,5 +1,6 @@
-from math import sqrt, hypot
 import logging
+from math import sqrt
+
 import pygame
 import pygame.gfxdraw
 

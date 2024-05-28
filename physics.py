@@ -1,53 +1,74 @@
-import pygame
+import logging
 from math import sqrt
-from game_objects import Ball, BigCircle
+
+import pygame
 
 
-def update_ball_position():
-    for ball in Ball.balls:
-        # Assuming positive acceleration downwards
-        ball.vel_y -= ball.acc
-        ball.pos_x += ball.vel_x
-        ball.pos_y += ball.vel_y  # Positive y should increase downward if gravity is downwards
+def handle_boundary_collision(self, center_pos_x, center_pos_y, boundary_radius):
+    velocity_magnitude = sqrt(self.vel_x ** 2 + self.vel_y ** 2)
+    ball_pos_x, ball_pos_y = self.pos_x, self.pos_y
+    vel_x, vel_y = self.vel_x, self.vel_y
+
+    distance_to_center = sqrt((center_pos_x - ball_pos_x) ** 2 + (center_pos_y - ball_pos_y) ** 2)
+
+    logging.debug(
+        f"Handling collision for ball at ({ball_pos_x}, {ball_pos_y}) with center at ({center_pos_x}, {center_pos_y})")
+
+    if distance_to_center > (boundary_radius - self.radius):
+
+        if self.sound:
+            pygame.mixer.Sound.play(pygame.mixer.Sound(self.sound))
+
+        logging.info(
+            f"Collision detected at distance: {distance_to_center} with boundary at {boundary_radius - self.radius}")
+
+        while sqrt((center_pos_x - self.pos_x) ** 2 + (center_pos_y - self.pos_y) ** 2) > (
+                boundary_radius - self.radius):
+            move_step = 0.2
+            self.pos_x += -self.vel_x * move_step / velocity_magnitude
+            self.pos_y -= -self.vel_y * move_step / velocity_magnitude
+
+        normal_vector = (ball_pos_x - center_pos_x, ball_pos_y - center_pos_y)
+        normal_magnitude = distance_to_center
+        norm_x, norm_y = normal_vector[0] / normal_magnitude, normal_vector[1] / normal_magnitude
+
+        velocity_direction = (vel_x, -vel_y)
+        reflected_velocity = (
+            velocity_direction[0] - 2 * (norm_x * velocity_direction[0] + norm_y * velocity_direction[1]) * norm_x,
+            velocity_direction[1] - 2 * (norm_x * velocity_direction[0] + norm_y * velocity_direction[1]) * norm_y
+        )
+
+        self.vel_x = reflected_velocity[0]
+        self.vel_y = -reflected_velocity[1]
 
 
-def handle_collisions(big_circle):
-    for ball in Ball.balls:
-        # Retrieve the center coordinates of the big circle
-        circle_center_x, circle_center_y = big_circle.center_x, big_circle.center_y
+def handle_ball_collision(self, other):
+    dx = self.pos_x - other.pos_x
+    dy = self.pos_y - other.pos_y
+    distance = sqrt(dx ** 2 + dy ** 2)
 
-        # Calculate the distance from the center of the big circle to the ball
-        distance_to_ball = sqrt((circle_center_x - ball.pos_x) ** 2 + (circle_center_y - ball.pos_y) ** 2)
+    if distance < self.radius + other.radius:
+        # Calculate normal and tangential velocities for this ball
+        nx, ny = dx / distance, dy / distance
+        tx, ty = -ny, nx
 
-        # Check if the ball is colliding with or inside the big circle
-        if distance_to_ball <= (big_circle.radius + ball.radius):
-            # Play collision sound
-            pygame.mixer.Sound.play(pygame.mixer.Sound(ball.sound))
+        # Decompose velocity components of both balls
+        v1n = nx * self.vel_x + ny * self.vel_y
+        v1t = tx * self.vel_x + ty * self.vel_y
+        v2n = nx * other.vel_x + ny * other.vel_y
+        v2t = tx * other.vel_x + ty * other.vel_y
 
-            # Calculate the collision normal vector
-            normal_x = ball.pos_x - circle_center_x
-            normal_y = ball.pos_y - circle_center_y
-            normal_magnitude = distance_to_ball
-            normal_x /= normal_magnitude
-            normal_y /= normal_magnitude
+        # Exchange normal velocity components (elastic collision)
+        self.vel_x = tx * v1t + nx * v2n
+        self.vel_y = ty * v1t + ny * v2n
+        other.vel_x = tx * v2t + nx * v1n
+        other.vel_y = ty * v2t + ny * v1n
 
-            # Calculate the incoming velocity vector
-            incoming_velocity_x = ball.vel_x
-            incoming_velocity_y = ball.vel_y
 
-            # Calculate the dot product of the normal vector and the velocity vector
-            dot_product = normal_x * incoming_velocity_x + normal_y * incoming_velocity_y
-
-            # Calculate the reflected velocity components
-            reflected_velocity_x = incoming_velocity_x - 2 * dot_product * normal_x
-            reflected_velocity_y = incoming_velocity_y - 2 * dot_product * normal_y
-
-            # Update the ball's velocity with the reflected components
-            ball.vel_x = reflected_velocity_x
-            ball.vel_y = reflected_velocity_y  # Reflection based on the collision normal
-
-            # Optionally, add damping to simulate energy loss
-            damping_factor = 0.9  # Less than 1 to reduce velocity
-            ball.vel_x *= damping_factor
-            ball.vel_y *= damping_factor
+def update_motion(self):
+    self.vel_y += self.acc
+    self.pos_x += self.vel_x
+    self.pos_y -= self.vel_y
+    logging.debug(
+        f"Ball motion updated: position ({self.pos_x}, {self.pos_y}), velocity ({self.vel_x}, {self.vel_y})")
 
