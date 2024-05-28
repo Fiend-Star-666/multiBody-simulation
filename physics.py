@@ -16,8 +16,8 @@ def handle_boundary_collision(ball, center_pos_x, center_pos_y, boundary_radius)
         if ball.sound:
             pygame.mixer.Sound.play(pygame.mixer.Sound(ball.sound))
 
-        logging.info(
-            f"Collision detected at distance: {distance_to_center} with boundary at {boundary_radius - ball.radius}")
+        # logging.info(
+        #     f"Collision detected at distance: {distance_to_center} with boundary at {boundary_radius - ball.radius}")
 
         while sqrt((center_pos_x - ball.pos_x) ** 2 + (center_pos_y - ball.pos_y) ** 2) > (
                 boundary_radius - ball.radius):
