@@ -19,7 +19,7 @@ class Ball:
         self.pos_y = pos_y
         self.sound = sound
         self.acc = GRAVITY  # Acceleration, can be set accordingly
-        self.thickness = 0  # Border thickness for drawing
+        self.thickness = 6  # Border thickness for drawing
         self.track = []
         # Ball.balls.append(self)
 
@@ -32,7 +32,7 @@ class Ball:
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.sound = sound
-        self.acc = 0
+        self.acc = GRAVITY
         self.track.clear()
 
     def draw(self, screen):
@@ -82,7 +82,7 @@ class Ball:
     #         self.vel_x -= 2 * dot_product * normal_x
     #         self.vel_y -= 2 * dot_product * normal_y
 
-    def handle_collision(self, center_pos_x, center_pos_y, boundary_radius):
+    def handle_boundary_collision(self, center_pos_x, center_pos_y, boundary_radius):
         velocity_magnitude = sqrt(self.vel_x ** 2 + self.vel_y ** 2)
         ball_pos_x, ball_pos_y = self.pos_x, self.pos_y
         vel_x, vel_y = self.vel_x, self.vel_y
@@ -118,63 +118,40 @@ class Ball:
 
             self.vel_x = reflected_velocity[0]
             self.vel_y = -reflected_velocity[1]
-            # # Calculate the direction vector from ball to center
-            # direction_x = center_pos_x - ball_pos_x
-            # direction_y = center_pos_y - ball_pos_y
-            # direction_magnitude = sqrt(direction_x ** 2 + direction_y ** 2)
-            # direction_x /= direction_magnitude
-            # direction_y /= direction_magnitude
-            #
-            # # Adjust ball position until it is just inside the boundary
-            # while distance_to_center >= (boundary_radius - self.radius):
-            #     step = 0.5  # This small step ensures that the ball moves just inside the boundary
-            #     self.pos_x += direction_x * step  # Adjust the step size if needed
-            #     self.pos_y += direction_y * step
-            #     distance_to_center = sqrt((center_pos_x - self.pos_x) ** 2 + (center_pos_y - self.pos_y) ** 2)
-            #     logging.debug(
-            #         f"Adjusting ball position to ({self.pos_x}, {self.pos_y}) to ensure it remains within boundary")
-            #
-            # # Reflect the velocity
-            # dot_product = direction_x * self.vel_x + direction_y * self.vel_y
-            # self.vel_x -= 2 * dot_product * direction_x
-            # self.vel_y -= 2 * dot_product * direction_y
-            # logging.debug(f"Ball velocity updated to ({self.vel_x}, {self.vel_y}) after reflection.")
 
-    def update_motion(self, center_x, center_y, big_radius):
+    def handle_ball_collision(self, other):
+        dx = self.pos_x - other.pos_x
+        dy = self.pos_y - other.pos_y
+        distance = sqrt(dx ** 2 + dy ** 2)
+
+        if distance < self.radius + other.radius:
+            # Calculate normal and tangential velocities for this ball
+            nx, ny = dx / distance, dy / distance
+            tx, ty = -ny, nx
+
+            # Decompose velocity components of both balls
+            v1n = nx * self.vel_x + ny * self.vel_y
+            v1t = tx * self.vel_x + ty * self.vel_y
+            v2n = nx * other.vel_x + ny * other.vel_y
+            v2t = tx * other.vel_x + ty * other.vel_y
+
+            # Exchange normal velocity components (elastic collision)
+            self.vel_x = tx * v1t + nx * v2n
+            self.vel_y = ty * v1t + ny * v2n
+            other.vel_x = tx * v2t + nx * v1n
+            other.vel_y = ty * v2t + ny * v1n
+
+
+    def update_motion(self):
         self.vel_y += self.acc
         self.pos_x += self.vel_x
         self.pos_y -= self.vel_y
         logging.debug(
             f"Ball motion updated: position ({self.pos_x}, {self.pos_y}), velocity ({self.vel_x}, {self.vel_y})")
 
-        # dx = self.pos_x - center_x
-        # dy = self.pos_y - center_y
-        # distance_from_center = sqrt(dx ** 2 + dy ** 2)
-        # if distance_from_center > big_radius - self.radius:
-        #     overlap = distance_from_center - (big_radius - self.radius)
-        #     self.pos_x -= (dx / distance_from_center) * overlap
-        #     self.pos_y -= (dy / distance_from_center) * overlap
-        #     normal_x, normal_y = dx / distance_from_center, dy / distance_from_center
-        #     dot_product = normal_x * self.vel_x + normal_y * self.vel_y
-        #     self.vel_x -= 2 * dot_product * normal_x
-        #     self.vel_y -= 2 * dot_product * normal_y
-        #     logging.info(f"Ball adjusted due to boundary overlap at ({self.pos_x}, {self.pos_y})")
-
-    # def update_track(self, frames, trail, fps):
-    #     if trail:
-    #         if not self.track or hypot(self.track[-1][0] - self.pos_x, self.track[-1][1] - self.pos_y) > 5:
-    #             self.track.append((self.pos_x, self.pos_y))
-    #             logging.debug(f"Track updated with new position ({self.pos_x}, {self.pos_y})")
-    #         if len(self.track) > fps * 5:
-    #             self.track.pop(0)
-    #             logging.debug("Oldest track point removed due to size limit.")
-    #     else:
-    #         self.track.clear()
-    #         logging.debug("Track cleared as trailing is disabled.")
-
     def update_track(self, frames, trail, fps):
         every = 2
-        period = 5
+        period = 1
         if frames % every == 0 and trail:
             self.track.append((self.pos_x, self.pos_y))
         if not trail:
@@ -195,7 +172,7 @@ class BallPool:
             raise Exception("No balls available in the pool")
         ball = self.available.pop()
         ball.reset(name, color, radius, vel_x, vel_y, pos_x, pos_y, sound)
-        #self.active_balls.append(ball)
+        # self.active_balls.append(ball)
         return ball
 
     def release(self, ball):

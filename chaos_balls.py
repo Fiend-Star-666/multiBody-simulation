@@ -4,7 +4,7 @@ from graphics import *
 from physics import *
 
 # Setup logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Initialize Pygame and set up the window
 pygame.init()
@@ -12,9 +12,9 @@ screen = setup_screen(DISPLAY_WIDTH, DISPLAY_HEIGHT, WINDOW_POSITION)
 pygame.display.set_caption("Bouncing Balls")
 clock = pygame.time.Clock()
 background = load_background("img/start_img.png")
-circleCentre = (DISPLAY_WIDTH // 2, DISPLAY_HEIGHT // 2)
-big_circle_radius = HEIGHT // 2
-big_circle = BigCircle(circleCentre[0], circleCentre[1], big_circle_radius, GREEN)
+circleCentre = (CIRCLE_WIDTH // 2, CIRCLE_HEIGHT // 2)
+big_circle_radius = CIRCLE_HEIGHT // 2
+big_circle = BigCircle(circleCentre[0], circleCentre[1], big_circle_radius, BLUISH_WHITE)
 logging.debug("Game initialized with main window and big circle setup.")
 
 # Main loop flags
@@ -31,18 +31,18 @@ ball_pool = BallPool(pool_size)
 def create_initial_balls():
     collision_sound = "audio/golf_ball.wav"
     logging.debug("Creating initial balls.")
-    red_ball = ball_pool.acquire("Red Ball", WHITE, 8, 5, -5, circleCentre[0] - circleCentre[1] + 10, big_circle_radius,
-                      collision_sound)
+    ball_radius = 10
+
+    red_ball = ball_pool.acquire("Red Ball", RED, ball_radius, 5, -5, circleCentre[0] - circleCentre[1] + ball_radius,
+                                 big_circle_radius, collision_sound)
     ball_pool.active_balls.append(red_ball)
     logging.info("Red ball acquired from pool and initialized.")
 
-    # Uncomment and use the following if you want more balls active initially green_ball = ball_pool.acquire("Green
-    # Ball", GREEN, 8, 0, WIDTH // 2 + HEIGHT // 2 - 10, HEIGHT // 2, collision_sound) green_ball.vel_y = 5
-    # green_ball.vel_x = -5
-
-    # velvet_ball = ball_pool.acquire("Velvet Ball", VELVET, 8, 10, WIDTH // 2, HEIGHT // 2 - HEIGHT // 2 + 10,
-    # collision_sound) gold_ball = ball_pool.acquire("Gold Ball", MAGENTA, 8, 2, WIDTH // 2, HEIGHT // 2 + HEIGHT //
-    # 2 - 10, collision_sound)
+    gold_ball = ball_pool.acquire("GOLDEN Ball", GOLDEN, ball_radius, -5, 5,
+                                  circleCentre[0] + circleCentre[1] - ball_radius,
+                                  big_circle_radius, collision_sound)
+    ball_pool.active_balls.append(gold_ball)
+    logging.info("GOLDEN ball acquired from pool and initialized.")
 
 
 # Initial screen before simulation starts
@@ -67,9 +67,11 @@ while True:
     pause, trail = handle_events(events, 'runtime', additional_params={'pause': pause, 'trail': trail})
 
     if not pause:
-        for ball in ball_pool.active_balls:  # Use active balls from the ball pool
-            ball.handle_collision(circleCentre[0], circleCentre[1], big_circle_radius)
-            ball.update_motion(circleCentre[0], circleCentre[1], big_circle_radius)
+        for i, ball in enumerate(ball_pool.active_balls):
+            ball.handle_boundary_collision(circleCentre[0], circleCentre[1], big_circle_radius)
+            for other in ball_pool.active_balls[i + 1:]:
+                ball.handle_ball_collision(other)
+            ball.update_motion()
             ball.update_track(frames, trail, FPS)
 
     draw_balls(screen, ball_pool)  # Ensure this function draws only active balls
