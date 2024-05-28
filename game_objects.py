@@ -38,50 +38,6 @@ class Ball:
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, (int(self.pos_x), int(self.pos_y)), self.radius, self.thickness)
 
-    # def handle_collision(self, center_x, center_y, big_radius):
-    #     velocity_magnitude = sqrt(self.vel_x ** 2 + self.vel_y ** 2)
-    #     ball_x, ball_y = self.pos_x, self.pos_y
-    #
-    #     # Calculate the distance from the ball to the circle's center
-    #     distance_to_center = sqrt((center_x - ball_x) ** 2 + (center_y - ball_y) ** 2)
-    #     logging.debug(f"Handling collision for ball at ({ball_x}, {ball_y}) with center at ({center_x}, {center_y})")
-    #
-    #     # If the ball is overlapping or touching the boundary
-    #     if distance_to_center >= (big_radius - self.radius):
-    #         logging.info(f"Collision detected at distance: {distance_to_center} with boundary at {big_radius - self.radius}")
-    #
-    #         # Optionally play the collision sound
-    #         if self.sound:
-    #             pygame.mixer.Sound.play(pygame.mixer.Sound(self.sound))
-    #             logging.debug("Collision sound played.")
-    #
-    #             # Reposition the ball just inside the boundary
-    #             if velocity_magnitude == 0:
-    #                 # Prevent division by zero by repositioning the ball directly without relying on its velocity
-    #                 overlap = distance_to_center + self.radius - big_radius
-    #                 self.pos_x -= (ball_x - center_x) / distance_to_center * overlap
-    #                 self.pos_y -= (ball_y - center_y) / distance_to_center * overlap
-    #             else:
-    #                 while sqrt((center_x - self.pos_x) ** 2 + (center_y - self.pos_y) ** 2) > (
-    #                         big_radius - self.radius):
-    #                     step = 0.2  # This small step ensures that the ball moves just inside the boundary
-    #                     self.pos_x += -self.vel_x * step / velocity_magnitude
-    #                     self.pos_y += -self.vel_y * step / velocity_magnitude
-    #                     logging.debug(f"Adjusting ball position to ({self.pos_x}, {self.pos_y}) to ensure it remains within boundary")
-    #
-    #         # Calculate normal vector from the circle's center to the ball
-    #         normal_x, normal_y = ball_x - center_x, ball_y - center_y
-    #         normal_magnitude = distance_to_center
-    #         normal_x /= normal_magnitude
-    #         normal_y /= normal_magnitude
-    #
-    #         # Calculate dot product of velocity and normal vector
-    #         dot_product = normal_x * self.vel_x + normal_y * self.vel_y
-    #
-    #         # Reflect the velocity using the normal vector
-    #         self.vel_x -= 2 * dot_product * normal_x
-    #         self.vel_y -= 2 * dot_product * normal_y
-
     def handle_boundary_collision(self, center_pos_x, center_pos_y, boundary_radius):
         velocity_magnitude = sqrt(self.vel_x ** 2 + self.vel_y ** 2)
         ball_pos_x, ball_pos_y = self.pos_x, self.pos_y
@@ -140,7 +96,6 @@ class Ball:
             self.vel_y = ty * v1t + ny * v2n
             other.vel_x = tx * v2t + nx * v1n
             other.vel_y = ty * v2t + ny * v1n
-
 
     def update_motion(self):
         self.vel_y += self.acc

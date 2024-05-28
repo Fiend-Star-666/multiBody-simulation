@@ -4,8 +4,6 @@ from math import cos, sin, atan2, radians, degrees, sqrt, tan
 import pygame
 from pygame import gfxdraw
 
-from game_objects import Ball
-
 
 def setup_screen(width, height, position):
     os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % position
