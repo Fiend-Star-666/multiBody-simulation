@@ -5,7 +5,7 @@ from constants import *
 def create_initial_balls(ball_pool, circle_centre, big_circle_radius):
     collision_sound = "audio/golf_ball.wav"
     logging.debug("Creating initial balls.")
-    ball_radius = 20
+    ball_radius = 10
 
     balls_info = [
         ("Red Ball", RED, 5, -5, circle_centre[0] - circle_centre[1] + ball_radius),
