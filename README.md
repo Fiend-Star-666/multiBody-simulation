@@ -5,8 +5,9 @@ Controls
 P: Pause/Resume the simulation.
 T: Toggle ball trails.
 Space: Start the simulation after loading.
+
 Project Structure
-chaos_balls.py: Main script to initialize and run the simulation.
+game.py: Main script to initialize and run the simulation.
 ball_initialization.py: Contains logic for initializing balls.
 constants.py: Defines various constants used throughout the project.
 event_loop.py: Manages the main event loop of the simulation.
