@@ -29,10 +29,19 @@ class Game:
         logging.debug("Game initialized with main window and big circle setup.")
 
     def update_balls(self):
-        for i, ball in enumerate(self.ball_pool.active_balls):
-            handle_boundary_collision(ball, self.circleCentre[0], self.circleCentre[1], self.big_circle_radius)
-            for other in self.ball_pool.active_balls[i + 1:]:
-                handle_ball_collision(ball, other)
+        circle_center_x, circle_center_y = self.circleCentre
+        big_circle_radius = self.big_circle_radius
+        active_balls = self.ball_pool.active_balls
+        num_balls = len(active_balls)
+
+        for i in range(num_balls):
+            ball = active_balls[i]
+            handle_boundary_collision(ball, circle_center_x, circle_center_y, big_circle_radius)
+
+            for j in range(i + 1, num_balls):
+                other_ball = active_balls[j]
+                handle_ball_collision(ball, other_ball)
+
             update_motion(ball)
             ball.update_motion_trace(self.frames, self.trail, FPS)
 
