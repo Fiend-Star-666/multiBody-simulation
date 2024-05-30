@@ -18,8 +18,8 @@ class Game:
         pygame.display.set_caption("Bouncing Balls")
         self.clock = pygame.time.Clock()
         self.background = load_background("img/start_img.png")
-        self.circleCentre = (CIRCLE_WIDTH // 2, CIRCLE_HEIGHT // 2)
         self.big_circle_radius = CIRCLE_HEIGHT // 2
+        self.circleCentre = (CIRCLE_WIDTH // 2, CIRCLE_HEIGHT // 2)
         self.big_circle = BigCircle(self.circleCentre[0], self.circleCentre[1], self.big_circle_radius, BLUISH_WHITE)
         self.pause = False
         self.start_sim = False

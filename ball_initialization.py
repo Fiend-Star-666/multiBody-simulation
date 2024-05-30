@@ -5,12 +5,12 @@ from constants import *
 def create_initial_balls(ball_pool, circle_centre, big_circle_radius):
     collision_sound = "audio/golf_ball.wav"
     logging.debug("Creating initial balls.")
-    ball_radius = 10
+    ball_radius = 8
 
     balls_info = [
         ("Red Ball", RED, 5, -5, circle_centre[0] - circle_centre[1] + ball_radius),
-        ("GOLDEN Ball", GOLDEN, -5, 5, circle_centre[0] + circle_centre[1] - ball_radius),
-        ("Green Ball", GREEN, 4, -4, circle_centre[0] - circle_centre[1] + 2 * ball_radius),
+        ("GOLDEN Ball", GOLDEN, -5, 4, circle_centre[0] + circle_centre[1] - ball_radius),
+        # ("Green Ball", GREEN, 4.25, -4.5, circle_centre[0] - circle_centre[1] + 2 * ball_radius),
         # ("Blue Ball", BLUE, -4, 4, circle_centre[0] + circle_centre[1] - 2 * ball_radius),
         # ("Magenta Ball", MAGENTA, -3, +6, circle_centre[0] - circle_centre[1] + 3 * ball_radius),
         # ("Yellow Ball", TASTY_YELLOW, -3, 3, circle_centre[0] + circle_centre[1] - 3 * ball_radius)

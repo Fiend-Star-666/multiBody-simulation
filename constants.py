@@ -2,7 +2,7 @@ import time
 
 # Constants for game settings
 START_TIME = time.time()
-FPS = 120
+FPS = 60
 DISPLAY_WIDTH = 1080
 DISPLAY_HEIGHT = 1980
 CIRCLE_WIDTH, CIRCLE_HEIGHT = 990, 540
